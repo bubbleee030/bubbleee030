@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="Bubble: safer language models and robots that follow spoken instructions">
+  <title>Bubble: safer language models and robots that follow spoken instructions</title>
+  <rect x="0.5" y="0.5" width="1199" height="319" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <g font-family="Georgia,'Times New Roman','Noto Serif TC',serif">
+    <text x="64" y="112" font-size="58" font-weight="600" letter-spacing="0" fill="#111827">Bubble</text>
+    <rect x="66" y="128" width="56" height="4" fill="#8a1c2b"/>
+    <text x="64" y="176" font-size="23" fill="#374151">I build and evaluate safer language models,</text>
+    <text x="64" y="208" font-size="23" fill="#374151">and robots that follow spoken instructions.</text>
+    <text x="64" y="262" font-size="16" fill="#6b7280">National University of Kaohsiung · Taiwan</text>
+    <line x1="640" y1="48" x2="640" y2="272" stroke="#d0d7de"/>
+    <text x="690" y="84" font-size="13" font-weight="700" fill="#8a1c2b">LLM safety &amp; alignment</text>
+    <line x1="710" y1="124" x2="1070" y2="124" stroke="#111827" stroke-width="1.5"/>
+    <g fill="#ffffff" stroke="#111827" stroke-width="1.5"><circle cx="710" cy="124" r="6"/><circle cx="800" cy="124" r="6"/><circle cx="890" cy="124" r="6"/><circle cx="980" cy="124" r="6"/></g>
+    <circle cx="1070" cy="124" r="6" fill="#8a1c2b"/>
+    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="154">red-team</text><text x="800" y="154">labels</text><text x="890" y="154">RM + CM</text><text x="980" y="154">PPO-Lag</text><text x="1070" y="154">blind eval</text></g>
+    <text x="690" y="212" font-size="13" font-weight="700" fill="#8a1c2b">Robot learning</text>
+    <line x1="710" y1="252" x2="1070" y2="252" stroke="#111827" stroke-width="1.5"/>
+    <g fill="#ffffff" stroke="#111827" stroke-width="1.5"><circle cx="710" cy="252" r="6"/><circle cx="800" cy="252" r="6"/><circle cx="890" cy="252" r="6"/><circle cx="980" cy="252" r="6"/></g>
+    <circle cx="1070" cy="252" r="6" fill="#8a1c2b"/>
+    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="282">voice</text><text x="800" y="282">VLA policy</text><text x="890" y="282">arm</text><text x="980" y="282">tactile</text><text x="1070" y="282">grasp</text></g>
+  </g>
+</svg>
