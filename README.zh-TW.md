@@ -1,12 +1,52 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="Bubble:safer language models and robots that follow spoken instructions" width="100%">
+  <img src="assets/banner.svg" alt="Bubble:Vision-Language-Action robot learning and safe RL for language models" width="100%">
 </p>
 
 國立高雄大學 · cmwang16@gmail.com · [English](README.md)
 
-## Safe RL and LLM alignment
+## Vision-Language-Action (VLA) robot learning
 
-8B 繁體中文客服模型的 safe reinforcement learning。以 PPO-Lagrange(constrained RL)訓練 LoRA policy:在 cost model(safety)低於 threshold 的限制下,最大化 reward model(helpfulness),並由 Lagrange multiplier 決定 constraint 的力道。Prompts 來自 policy-conditioned 的 red-team generator,最後用 blinded evaluation 檢驗成果。
+語音控制的 pick-and-place 系統,跨兩台機器。語音或文字指令選定物體,RDT(Robotics Diffusion Transformer)Vision-Language-Action policy 以兩個 RealSense 視角、claw camera 與指令為 conditioning,把手臂移到物體上方。到達 grasp 高度後,控制權交給 Jetson AGX 上的 tactile LSTM,由它閉合與釋放夾爪。
+
+```mermaid
+flowchart LR
+    V["語音或文字<br/>指令"] --> N["NLU +<br/>operator confirm"]
+    N --> A["VLA approach<br/>(RDT policy)"]
+    A --> C["Arrival check<br/>claw-cam YOLO + VLA step"]
+    C --> H["Handoff gate"]
+    H --> T["Tactile LSTM grasp<br/>(Jetson AGX)"]
+    T --> R["Release at<br/>place point"]
+```
+
+VLA 部分的發現與實作:
+
+- Policy 一開始會 collapse 到 dataset 的平均姿態,不管相機看到什麼。把 proprioceptive state token 歸零("blind-state" training,deployment 也用同樣設定),才迫使它從視覺定位。
+- 手臂只在兩個檢查一致時才下降:claw camera 的 YOLO box 落在每個物體的 setpoint 上,而且 VLA 預測的下一步位移很小。檢查只在 hover 高度進行,因為低於約 200 mm 時物體在夾爪之下,YOLO 會退化。
+- 手臂由 laptop 控制,夾爪由 AGX 控制,兩台機器不會同時控制同一個部位。夾爪的模型在 approach 期間就先 preload,消除 handoff 時的載入延遲。
+- 瀏覽器的語音辨識是 open-vocabulary,對很短的詞排序不佳("knife" 曾被辨識成 "OK Google")。Client 把所有 alternatives 都送出,server 選第一個命中已知物體的,找不到時再做 homophone 比對。
+- 目前的 demo 中,每個物體走 fallback ladder 的不同層級:梯形用 VLA approach,電路板用 side-camera locator,奶油刀用記錄的取物位置。
+
+| 專案 | 內容 |
+|---|---|
+| [voice-pick-vla](https://github.com/bubbleee030/voice-pick-vla) | 完整系統:RDT VLA policy、YOLO 與 tactile pipeline、語音介面、網頁 dashboard 與設計紀錄。 |
+| [VLA](https://github.com/bubbleee030/VLA) | 較早期的工作:在自行收集的 pick dataset 上做 RDT fine-tuning、GelSight tactile image augmentation、tactile vs baseline 實驗。 |
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bubbleee030/voice-pick-vla/main/docs/images/ui_dashboard.png" alt="voice-pick-vla operator dashboard" width="100%">
+  <br><sub>voice-pick-vla operator dashboard:兩個 RealSense 視角、claw camera 與 YOLO、即時 tactile 曲線、手臂狀態與語音輸入。</sub>
+</p>
+
+## Safe reinforcement learning for LLMs
+
+8B 繁體中文客服模型的 safe RL。以 PPO-Lagrange(constrained RL)訓練 LoRA policy:在 cost model(safety)低於 threshold 的限制下,最大化 reward model(helpfulness),並由 Lagrange multiplier 決定 constraint 的力道。Prompts 來自 policy-conditioned 的 red-team generator,最後用 blinded evaluation 檢驗成果。
+
+```mermaid
+flowchart LR
+    A["Policy-conditioned<br/>harmful-prompt generation"] --> B["Human + LLM<br/>preference annotation"]
+    B --> C["Reward model +<br/>cost model"]
+    C --> D["PPO-Lagrange (constrained RL)<br/>LoRA adapter"]
+    D --> E["Blinded five-arm<br/>evaluation"]
+```
 
 RL 部分的發現:
 
@@ -16,9 +56,9 @@ RL 部分的發現:
 <details>
 <summary>RL design choices</summary>
 
-- 目標是在 cost model 的分數低於 threshold 的前提下,最大化 reward model 的分數。Actor 的 advantage 同時結合兩者:`(A_reward − λ · A_cost) / (1 + λ)`,並加上對 reference policy 的 per-token KL penalty。
+- 目標是在 cost model 的分數低於 threshold 的前提下,最大化 reward model 的分數,實作移植自 PKU-Alignment 的 safe-rlhf。Actor 的 advantage 同時結合兩者:`(A_reward − λ · A_cost) / (1 + λ)`,並加上對 reference policy 的 per-token KL penalty。
 - Multiplier λ 在 log space 中以 SGD 學習,更新依據是 windowed 的平均 episode cost,並設有 cap。
-- Reward model 與 cost model 分開訓練,backbone 為 Ministral-3-3B,PPO 期間保持 frozen。只有 8B actor 上的 LoRA adapter 被訓練。
+- Reward model 與 cost model(Ministral-3-3B backbone)是 frozen scorers。Actor 是 8B base 上的 LoRA adapter,另有從這兩個模型初始化的 reward critic 與 cost critic 一起訓練。
 - 先做 gate-and-rank:inference 時由 cost model 拒絕 unsafe candidates,再由 reward model 排序其餘結果。早期的 reward model by-prompt accuracy 約 0.60,在 PPO 下容易引發 reward hacking;在 gate-and-rank 中,弱的 reward model 只會排錯本來就安全的 candidates。
 
 </details>
@@ -46,18 +86,6 @@ RL 部分的發現:
 <p align="center">
   <img src="https://raw.githubusercontent.com/bubbleee030/RLHF_Customer/main/docs/figures/lambda_regimes.svg" alt="各 run 的 terminal Lagrange multiplier 與其 cap" width="60%">
   <br><sub>RLHF_Customer:各 run 的 terminal Lagrange multiplier 與其 cap。</sub>
-</p>
-
-## Robot learning
-
-| 專案 | 內容 |
-|---|---|
-| [voice-pick-vla](https://github.com/bubbleee030/voice-pick-vla) | 語音控制的 pick-and-place 系統,跨兩台機器:RDT VLA policy 控制手臂,Jetson AGX 上的 tactile LSTM 控制夾爪。含 fallback ladder 與網頁 dashboard。 |
-| [VLA](https://github.com/bubbleee030/VLA) | 較早期的工作:RDT fine-tuning、資料轉換、tactile image augmentation、tactile vs baseline 實驗。 |
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/bubbleee030/voice-pick-vla/main/docs/images/ui_dashboard.png" alt="voice-pick-vla operator dashboard" width="100%">
-  <br><sub>voice-pick-vla operator dashboard:兩個 RealSense 視角、claw camera 與 YOLO、即時 tactile 曲線、手臂狀態與語音輸入。</sub>
 </p>
 
 ## 其他

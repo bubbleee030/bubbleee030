@@ -8,15 +8,15 @@
     <text x="64" y="208" font-size="23" fill="#374151">and robots that follow spoken instructions.</text>
     <text x="64" y="262" font-size="16" fill="#6b7280">National University of Kaohsiung · Taiwan</text>
     <line x1="640" y1="48" x2="640" y2="272" stroke="#d0d7de"/>
-    <text x="690" y="84" font-size="13" font-weight="700" fill="#8a1c2b">LLM safety &amp; alignment</text>
+    <text x="690" y="84" font-size="13" font-weight="700" fill="#8a1c2b">VLA robot learning</text>
     <line x1="710" y1="124" x2="1070" y2="124" stroke="#111827" stroke-width="1.5"/>
     <g fill="#ffffff" stroke="#111827" stroke-width="1.5"><circle cx="710" cy="124" r="6"/><circle cx="800" cy="124" r="6"/><circle cx="890" cy="124" r="6"/><circle cx="980" cy="124" r="6"/></g>
     <circle cx="1070" cy="124" r="6" fill="#8a1c2b"/>
-    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="154">red-team</text><text x="800" y="154">labels</text><text x="890" y="154">RM + CM</text><text x="980" y="154">PPO-Lag</text><text x="1070" y="154">blind eval</text></g>
-    <text x="690" y="212" font-size="13" font-weight="700" fill="#8a1c2b">Robot learning</text>
+    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="154">voice</text><text x="800" y="154">VLA policy</text><text x="890" y="154">arm</text><text x="980" y="154">tactile</text><text x="1070" y="154">grasp</text></g>
+    <text x="690" y="212" font-size="13" font-weight="700" fill="#8a1c2b">Safe RL &amp; LLM alignment</text>
     <line x1="710" y1="252" x2="1070" y2="252" stroke="#111827" stroke-width="1.5"/>
     <g fill="#ffffff" stroke="#111827" stroke-width="1.5"><circle cx="710" cy="252" r="6"/><circle cx="800" cy="252" r="6"/><circle cx="890" cy="252" r="6"/><circle cx="980" cy="252" r="6"/></g>
     <circle cx="1070" cy="252" r="6" fill="#8a1c2b"/>
-    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="282">voice</text><text x="800" y="282">VLA policy</text><text x="890" y="282">arm</text><text x="980" y="282">tactile</text><text x="1070" y="282">grasp</text></g>
+    <g font-size="12" fill="#374151" text-anchor="middle"><text x="710" y="282">red-team</text><text x="800" y="282">labels</text><text x="890" y="282">RM + CM</text><text x="980" y="282">PPO-Lag</text><text x="1070" y="282">blind eval</text></g>
   </g>
 </svg>
