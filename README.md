@@ -4,7 +4,7 @@
 
 National University of Kaohsiung · cmwang16@gmail.com · [繁體中文](README.zh-TW.md)
 
-## LLM safety and alignment
+## Safe RL and LLM alignment
 
 Safe reinforcement learning for an 8B Traditional Chinese customer-service model. A LoRA policy is trained
 with PPO-Lagrange, a constrained RL method: it maximizes a learned reward model (helpfulness) while
@@ -26,7 +26,7 @@ What the RL work found:
 flowchart LR
     A["Policy-conditioned<br/>harmful-prompt generation"] --> B["Human + LLM<br/>preference annotation"]
     B --> C["Reward model +<br/>cost model"]
-    C --> D["PPO-Lagrange<br/>(LoRA adapter)"]
+    C --> D["PPO-Lagrange (constrained RL)<br/>LoRA adapter"]
     D --> E["Blinded five-arm<br/>evaluation"]
 ```
 

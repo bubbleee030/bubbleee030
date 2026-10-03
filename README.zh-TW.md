@@ -4,7 +4,7 @@
 
 國立高雄大學 · cmwang16@gmail.com · [English](README.md)
 
-## LLM safety and alignment
+## Safe RL and LLM alignment
 
 8B 繁體中文客服模型的 safe reinforcement learning。以 PPO-Lagrange(constrained RL)訓練 LoRA policy:在 cost model(safety)低於 threshold 的限制下,最大化 reward model(helpfulness),並由 Lagrange multiplier 決定 constraint 的力道。Prompts 來自 policy-conditioned 的 red-team generator,最後用 blinded evaluation 檢驗成果。
 
