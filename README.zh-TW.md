@@ -13,6 +13,16 @@ RL 部分的發現:
 - 第一次 PPO-Lagrange 訓練和未訓練模型無法區分。四個訓練前就能量測的缺陷讓 constraint 發揮不了作用:cost model 的 split 洩漏(對 unsafe responses 的真實 recall 只有 20.1%)、cost threshold 設為 0.0 而每個 batch 都已達標(multiplier 衰減到 0.0114)、reward model 給 unsafe compliance 的分數比 safe refusal 高 2.121,以及不穩定的 actor learning rate。
 - Multiplier 的行為由 threshold 決定:threshold 總是達標時衰減,從未達標時撞到 cap,只有在 threshold 可達且確實達到時才會調整。
 
+<details>
+<summary>RL design choices</summary>
+
+- 目標是在 cost model 的分數低於 threshold 的前提下,最大化 reward model 的分數。Actor 的 advantage 同時結合兩者:`(A_reward − λ · A_cost) / (1 + λ)`,並加上對 reference policy 的 per-token KL penalty。
+- Multiplier λ 在 log space 中以 SGD 學習,更新依據是 windowed 的平均 episode cost,並設有 cap。
+- Reward model 與 cost model 分開訓練,backbone 為 Ministral-3-3B,PPO 期間保持 frozen。只有 8B actor 上的 LoRA adapter 被訓練。
+- 先做 gate-and-rank:inference 時由 cost model 拒絕 unsafe candidates,再由 reward model 排序其餘結果。早期的 reward model by-prompt accuracy 約 0.60,在 PPO 下容易引發 reward hacking;在 gate-and-rank 中,弱的 reward model 只會排錯本來就安全的 candidates。
+
+</details>
+
 | 專案 | 內容 | 一個發現 |
 |---|---|---|
 | [RLHF_Customer](https://github.com/bubbleee030/RLHF_Customer) | reward / cost model 與 PPO-Lagrange 安全訓練,附 preregistered held-out set | 在 system prompt 之上加 adapter:safe outcome **+24.5 pp**,95% CI [13.7, 36.3](163 筆 prompts)。用 adapter 取代 system prompt:無法下結論。 |

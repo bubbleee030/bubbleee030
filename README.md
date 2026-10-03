@@ -30,6 +30,16 @@ flowchart LR
     D --> E["Blinded five-arm<br/>evaluation"]
 ```
 
+<details>
+<summary>RL design choices</summary>
+
+- The objective is to maximize the reward model's score while the cost model's score stays under a threshold. The actor's advantage combines both: `(A_reward − λ · A_cost) / (1 + λ)`, with a per-token KL penalty to the reference policy.
+- The multiplier λ is learned in log space by SGD on the windowed mean episode cost, with a cap.
+- The reward and cost models are trained separately on a Ministral-3-3B backbone and stay frozen during PPO. Only a LoRA adapter on the 8B actor is trained.
+- Gate-and-rank came first: at inference time the cost model rejects unsafe candidates and the reward model ranks the rest. An early reward model had about 0.60 by-prompt accuracy, which invites reward hacking under PPO, whereas in gate-and-rank a weak reward model can only mis-rank candidates that are already safe.
+
+</details>
+
 | Project | What it is | One finding |
 |---|---|---|
 | [RLHF_Customer](https://github.com/bubbleee030/RLHF_Customer) | Reward/cost models and PPO-Lagrange for safety, with a preregistered held-out set | Adapter on top of a system prompt: **+24.5 pp** safe outcomes, 95% CI [13.7, 36.3] (163 prompts). Replacing the prompt with the adapter: inconclusive. |
