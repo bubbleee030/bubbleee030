@@ -6,8 +6,21 @@ National University of Kaohsiung · cmwang16@gmail.com · [繁體中文](README.
 
 ## LLM safety and alignment
 
-Safety alignment for an 8B Traditional Chinese customer-service model: generating red-team prompts,
-training reward and cost models, PPO-Lagrange, and a blinded evaluation of the result.
+Safe reinforcement learning for an 8B Traditional Chinese customer-service model. A LoRA policy is trained
+with PPO-Lagrange, a constrained RL method: it maximizes a learned reward model (helpfulness) while
+keeping a learned cost model (safety) under a threshold, and a Lagrange multiplier sets how hard the
+constraint pushes. Prompts come from a policy-conditioned red-team generator, and a blinded evaluation
+judges the result.
+
+What the RL work found:
+
+- The first PPO-Lagrange run was indistinguishable from the untrained model. Four defects, each measurable
+  before training, kept the constraint from acting: a leaky cost-model split (true recall of unsafe
+  responses was 20.1%), a cost threshold of 0.0 that every batch already met (the multiplier decayed to
+  0.0114), a reward model that scored unsafe compliance 2.121 above a safe refusal, and an unstable actor
+  learning rate.
+- The multiplier follows the threshold. It decays when the threshold is always met, saturates at its cap
+  when it is never met, and adapts only when the threshold is reachable and reached.
 
 ```mermaid
 flowchart LR
@@ -36,6 +49,11 @@ flowchart LR
     </td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bubbleee030/RLHF_Customer/main/docs/figures/lambda_regimes.svg" alt="Terminal Lagrange multiplier per run against its cap" width="60%">
+  <br><sub>RLHF_Customer: terminal Lagrange multiplier for each run, against its cap.</sub>
+</p>
 
 ## Robot learning
 

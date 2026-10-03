@@ -6,7 +6,12 @@
 
 ## LLM safety and alignment
 
-8B 繁體中文客服模型的 safety alignment:red-team prompts 生成、reward model 與 cost model 訓練、PPO-Lagrange,最後用 blinded evaluation 檢驗成果。
+8B 繁體中文客服模型的 safe reinforcement learning。以 PPO-Lagrange(constrained RL)訓練 LoRA policy:在 cost model(safety)低於 threshold 的限制下,最大化 reward model(helpfulness),並由 Lagrange multiplier 決定 constraint 的力道。Prompts 來自 policy-conditioned 的 red-team generator,最後用 blinded evaluation 檢驗成果。
+
+RL 部分的發現:
+
+- 第一次 PPO-Lagrange 訓練和未訓練模型無法區分。四個訓練前就能量測的缺陷讓 constraint 發揮不了作用:cost model 的 split 洩漏(對 unsafe responses 的真實 recall 只有 20.1%)、cost threshold 設為 0.0 而每個 batch 都已達標(multiplier 衰減到 0.0114)、reward model 給 unsafe compliance 的分數比 safe refusal 高 2.121,以及不穩定的 actor learning rate。
+- Multiplier 的行為由 threshold 決定:threshold 總是達標時衰減,從未達標時撞到 cap,只有在 threshold 可達且確實達到時才會調整。
 
 | 專案 | 內容 | 一個發現 |
 |---|---|---|
@@ -27,6 +32,11 @@
     </td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bubbleee030/RLHF_Customer/main/docs/figures/lambda_regimes.svg" alt="各 run 的 terminal Lagrange multiplier 與其 cap" width="60%">
+  <br><sub>RLHF_Customer:各 run 的 terminal Lagrange multiplier 與其 cap。</sub>
+</p>
 
 ## Robot learning
 
