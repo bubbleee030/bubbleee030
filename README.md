@@ -47,6 +47,24 @@ What the VLA work found and built:
   <br><sub>voice-pick-vla operator dashboard. Two RealSense views, claw camera with YOLO, live tactile trace, arm state and voice input.</sub>
 </p>
 
+## Robot arm control apps (macOS · iPadOS · Linux)
+
+<sub>An independent, unofficial rewrite; not affiliated with Delta Electronics.</sub>
+
+<p align="center">
+  <a href="assets/arm-apps-demo.mp4"><img src="assets/arm-apps-demo.gif" alt="Arm control apps: a move preview on macOS, jogging on iPadOS, Go to a point on the Linux server's browser page, and a two-arm preview on macOS" width="100%"></a>
+  <br><sub>App demo against a practice controller; real-arm video coming. <a href="assets/arm-apps-demo.mp4">Full 42 s clip (MP4)</a>.</sub>
+</p>
+
+The arm maker's control software runs only on Windows. These native apps rebuild what the lab needs: jog,
+Go to a point with a preview and safety checks, STOP, recording for datasets, and a 3D view that previews
+two arms in one cell. The apps talk to the controller over its documented Modbus TCP interface.
+
+- Scale: one Swift code base on three platforms (a Mac app, an iPad app, and a Linux server with a browser
+  page), with 1,756 Mac tests and 1,397 Linux tests passing on 2026-11-20.
+- Status: Mac and iPad jog, and the Linux server, have run on the real arm. Dataset recording is built but
+  not yet used on the arm, and the two-arm work is in progress.
+
 ## Safe reinforcement learning for LLMs
 
 Safe RL for an 8B Traditional Chinese customer-service model. A LoRA policy is trained with PPO-Lagrange,
