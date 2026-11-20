@@ -47,7 +47,7 @@ VLA 部分的發現與實作:
 
 手臂原廠的控制軟體只能在 Windows 上執行。這些原生 app 重做了實驗室需要的功能:jog、附 preview 與安全檢查的 Go to point、STOP、dataset 錄製,以及能在同一個工作區預覽兩支手臂的 3D 畫面。App 透過控制器文件公開的 Modbus TCP 介面與控制器溝通。
 
-- 規模:同一套 Swift 程式碼跑在三個平台(Mac app、iPad app,以及附瀏覽器頁面的 Linux server),2026-11-20 時 Mac 1,756 個、Linux 1,397 個測試全數通過。
+- 規模:同一套 Swift 程式碼跑在三個平台(Mac app、iPad app,以及附瀏覽器頁面的 Linux server)。
 - 現況:Mac 與 iPad 的 jog,以及 Linux server,都已在實機上跑過。Dataset 錄製已完成實作,但還沒在實機上使用;雙臂部分仍在進行中。
 
 ## Safe reinforcement learning for LLMs

@@ -61,7 +61,7 @@ Go to a point with a preview and safety checks, STOP, recording for datasets, an
 two arms in one cell. The apps talk to the controller over its documented Modbus TCP interface.
 
 - Scale: one Swift code base on three platforms (a Mac app, an iPad app, and a Linux server with a browser
-  page), with 1,756 Mac tests and 1,397 Linux tests passing on 2026-11-20.
+  page).
 - Status: Mac and iPad jog, and the Linux server, have run on the real arm. Dataset recording is built but
   not yet used on the arm, and the two-arm work is in progress.
 
